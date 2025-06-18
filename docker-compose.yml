@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:5.0
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - aeropuertos-net
+
+  redis-geo:
+    image: redis:6.2
+    command: redis-server --save "" --appendonly no
+    networks:
+      - aeropuertos-net
+
+  redis-pop:
+    image: redis:6.2
+    command: redis-server --save "" --appendonly no
+    networks:
+      - aeropuertos-net
+
+  backend:
+    build: ./backend
+    environment:
+      - MONGO_URI=mongodb://mongo:27017
+      - REDIS_GEO_HOST=redis-geo
+      - REDIS_POP_HOST=redis-pop
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+      - redis-geo
+      - redis-pop
+    networks:
+      - aeropuertos-net
+
+volumes:
+  mongo_data:
+
+networks:
+  aeropuertos-net:
