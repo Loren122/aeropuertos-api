@@ -34,6 +34,18 @@ def create_airport():
     )
     return jsonify({'status': 'created', 'id': str(result.inserted_id)}), 201
 
+@app.route('/airports', methods= ['GET'])
+def get_all_airports():
+    all_airports = list(airports.find({}, {
+        '_id': 0,
+        'iata_code': 1,
+        'name': 1,
+        'city': 1,
+        'country': 1,
+        'location': 1
+    }))
+    return jsonify(all_airports)
+
 @app.route('/airports/<iata_code>', methods=['GET'])
 def get_airport(iata_code):
     airport = airports.find_one({'iata_code': iata_code}, {'_id': 0})
@@ -74,11 +86,11 @@ def delete_airport(iata_code):
 @app.route('/airports/nearby', methods=['GET'])
 def nearby_airports():
     lat = float(request.args.get('lat'))
-    lon = float(request.args.get('lon'))
+    lng = float(request.args.get('lng'))
     radius = float(request.args.get('radius', 100))
     results = redis_geo.georadius(
         'airports_geo',
-        lon, lat,
+        lng, lat,
         radius,
         unit='km',
         withdist=True,
