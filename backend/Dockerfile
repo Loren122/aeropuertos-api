@@ -3,4 +3,4 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-CMD ["sh", "-c", "python app.py"]
+CMD ["sh", "-c", "python data_loader.py && python app.py"]
