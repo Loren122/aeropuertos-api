@@ -70,5 +70,35 @@ def delete_airport(iata_code):
         return jsonify({'status': 'deleted'})
     return jsonify({'error': 'Airport not found'}), 404
 
+# Consultas Geoespaciales
+@app.route('/airports/nearby', methods=['GET'])
+def nearby_airports():
+    lat = float(request.args.get('lat'))
+    lon = float(request.args.get('lon'))
+    radius = float(request.args.get('radius', 100))
+    results = redis_geo.georadius(
+        'airports_geo',
+        lon, lat,
+        radius,
+        unit='km',
+        withdist=True,
+    )
+    return jsonify([
+        {'iata_code': res[0].decode(), 'distance_km': res[1]}
+        for res in results
+    ])
+
+@app.route('/airports/popular', methods=['GET'])
+def popular_airports():
+    results = redis_pop.zrevrange(
+        'airport_popularity',
+        0, 9, # Top 10
+        withscores=True
+    )
+    return jsonify([
+        {'iata_code': res[0].decode(), 'visits': res[1]}
+        for res in results
+    ])
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
