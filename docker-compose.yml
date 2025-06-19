@@ -26,6 +26,8 @@ services:
       - MONGO_URI=mongodb://mongo:27017
       - REDIS_GEO_HOST=redis-geo
       - REDIS_POP_HOST=redis-pop
+    volumes:
+      - ./backend:/app
     ports:
       - "5000:5000"
     depends_on:
