@@ -15,12 +15,31 @@ redis_geo = redis.Redis(host=REDIS_GEO_HOST, port=6379, db=0)
 if airports.count_documents({}) == 0:
     with open('airports.json') as f:
         data = json.load(f)
-        airports.insert_many(data)
+
+        transformed_data = []
         for airport in data:
-            redis_geo.geoadd(
-                'airports_geo',
-                airport['location']['coordinates'][0],
-                airport['location']['coordinates'][1],
-                airport['iata_code']
-            )
-    print("Datos iniciales cargados.")
+            transformed_airport = {
+                'iata_code': airport['iata_faa'],
+                'name': airport['name'],
+                'city': airport['city'],
+                'country': airport['city'].split(', ')[-1],
+                'location': {
+                    'type': 'Point',
+                    'coordinates': [airport['lng'], airport['lat']]
+                },
+                'alt': airport['alt'],
+                'tz': airport['tz'],
+            }
+            transformed_data.append(transformed_airport)
+        
+        airports.insert_many(transformed_data)
+
+        for airport in transformed_data:
+            for airport in transformed_data:
+                redis_geo.geoadd(
+                    'airports_geo',
+                    airport['location']['coordinates'][0], # lng
+                    airport['location']['coordinates'][1], # lat
+                    airport['iata_code']
+                )
+    print("Datos iniciales transformados y cargados.")
