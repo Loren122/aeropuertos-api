@@ -37,6 +37,15 @@ services:
     networks:
       - aeropuertos-net
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - aeropuertos-net
+
 volumes:
   mongo_data:
 
