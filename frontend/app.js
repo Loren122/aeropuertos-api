@@ -1,5 +1,5 @@
 const map = L.map('map').setView([40.0, -100.0], 4);
-const backendUrl = 'http://backend:5000';
+const backendUrl = 'http://localhost:5000';
 
 // Capa base
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
