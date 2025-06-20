@@ -7,7 +7,7 @@ import json
 from bson import ObjectId
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
 REDIS_GEO_HOST = os.getenv('REDIS_GEO_HOST', 'redis-geo')
